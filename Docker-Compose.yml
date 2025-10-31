@@ -1,0 +1,10 @@
+version: "3.8"
+
+services:
+  nodejs:
+    image:  notorious007/nodejs_portfolio:latest
+    container_name: nodejs_personal_portfolio
+    ports:
+    - "3000:3000"
+    environment:
+      - NODE_ENV= production
