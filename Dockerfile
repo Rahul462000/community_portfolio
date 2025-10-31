@@ -1,31 +1,31 @@
-# base image for nodejs
-
+# ---------------- Stage 1: Build ----------------
 FROM node:18-slim AS builder
 
-#creating work directory for the container
-
+# Create working directory
 WORKDIR /app
-# installing dependencies 
 
-RUN npm install
+# Copy only package.json and package-lock.json first (for better caching)
+COPY package*.json ./
 
-#copy the application files from local to container direcotry
+# Install dependencies
+RUN npm ci --omit=dev   # production-safe install (skips dev dependencies)
 
+# Copy the rest of the source code
 COPY . .
 
-#---------------- Stage:2 Runtime--------------
-FROM node:18-alpine 
+# Optional: If you build TypeScript or transpile, do it here
+# RUN npm run build
 
-WORKDIR /newappcontainer
+# ---------------- Stage 2: Runtime ----------------
+FROM node:18-alpine
 
-#copy the compiled dependencies from builder
+WORKDIR /app
 
-COPY --from=builder /app /newappcontainer/
+# Copy only necessary files from builder (e.g., built code + node_modules)
+COPY --from=builder /app /app
 
-#exposing port 
-
+# Expose the app port
 EXPOSE 3000
 
-#serving the app and keep container running
-
-CMD ["npm","run","dev"]
+# Start the application (use npm start for production)
+CMD ["npm", "start"]
