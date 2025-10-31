@@ -7,7 +7,7 @@ FROM node:18-slim AS builder
 WORKDIR /app
 # installing dependencies 
 
-RUN npm ci --only=production
+RUN npm install
 
 #copy the application files from local to container direcotry
 
