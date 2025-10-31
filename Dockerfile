@@ -28,4 +28,4 @@ COPY --from=builder /app /app
 EXPOSE 3000
 
 # Start the application (use npm start for production)
-CMD ["npm", "start"]
+CMD ["npm","run","dev"]
