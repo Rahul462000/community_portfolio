@@ -1,19 +1,31 @@
-#1. Base file
-FROM node:18-slim
+# base image for nodejs
 
-#working
+FROM node:18-slim AS builder
+
+#creating work directory for the container
+
 WORKDIR /app
+# installing dependencies 
 
-#copy the code from source to conatiner directory
+RUN npm ci --only=production
+
+#copy the application files from local to container direcotry
 
 COPY . .
 
-#run the build command and install dependencies
+#---------------- Stage:2 Runtime--------------
+FROM node:18-alpine 
 
-RUN npm install && npm run build
+WORKDIR /newappcontainer
 
-#exposing port
+#copy the compiled dependencies from builder
+
+COPY --from=builder /app /newappcontainer/
+
+#exposing port 
+
 EXPOSE 3000
 
-#serving the app and keep it running
+#serving the app and keep container running
+
 CMD ["npm","run","dev"]
